@@ -3,64 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexGen Downloader</title>
+    <title>NexGen - Universal Multi-Platform Media Extractor</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; display: flex; justify-center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: #111; border: 1px solid #333; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #222; color: #fff; margin-bottom: 20px; outline: none; }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #0070f3; color: #fff; font-weight: bold; cursor: pointer; }
-        .result { margin-top: 20px; display: none; padding: 15px; background: #1a1a1a; border-radius: 10px; }
-        .dl-link { display: block; background: #22c55e; color: #fff; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        body { background-color: #111827; color: white; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-gradient { background: linear-gradient(135deg, #2563eb, #1d4ed8); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
 
-<div class="card">
-    <h2 style="font-size: 24px; font-weight: 900; margin-bottom: 20px;">NEXGEN DL</h2>
-    <input type="text" id="url" placeholder="TikTok Link পেস্ট করুন...">
-    <button onclick="download()" id="btn">DOWNLOAD</button>
-
-    <div id="loader" style="display:none; margin-top: 20px; color: #888;">কাজ চলছে, দয়া করে অপেক্ষা করুন...</div>
-
-    <div id="result" class="result">
-        <p style="color: #22c55e;">ভিডিও পাওয়া গেছে!</p>
-        <a id="hd" class="dl-link" href="#" target="_blank">Download Video (HD)</a>
+    <div class="text-center mb-12">
+        <div class="flex items-center justify-center gap-3 mb-3">
+            <i class="fas fa-globe-americas text-4xl text-blue-500"></i>
+            <h1 class="text-5xl font-extrabold tracking-tighter">NEXGEN</h1>
+        </div>
+        <p class="text-gray-400 text-lg">Universal Multi-Platform Media Extractor</p>
     </div>
-</div>
 
-<script>
-async function download() {
-    const url = document.getElementById('url').value;
-    const btn = document.getElementById('btn');
-    const loader = document.getElementById('loader');
-    const result = document.getElementById('result');
+    <div class="glass w-full max-w-2xl p-8 rounded-[2rem] shadow-2xl">
+        <div class="flex flex-col sm:flex-row gap-4">
+            <input type="text" id="videoUrl" placeholder="https://vt.tiktok.com/..." 
+                class="flex-1 bg-gray-800/50 border border-gray-700 p-5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500">
+            <button onclick="fetchVideo()" id="mainBtn" class="btn-gradient px-10 py-5 rounded-2xl font-bold text-sm uppercase tracking-widest">
+                Generate
+            </button>
+        </div>
 
-    if(!url) return alert("আগে লিঙ্ক দিন!");
+        <div id="status" class="hidden mt-8 text-center">
+            <div class="flex items-center justify-center gap-3">
+                <div class="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                <p id="statusText" class="text-blue-400 font-medium">Connecting to Global Nodes...</p>
+            </div>
+        </div>
 
-    btn.disabled = true;
-    loader.style.display = 'block';
-    result.style.display = 'none';
+        <div id="result" class="hidden mt-10 p-6 bg-blue-500/5 rounded-3xl border border-blue-500/20 text-center">
+            <p class="text-green-400 font-bold mb-6">Video Ready for Download!</p>
+            <a id="downloadBtn" href="#" target="_blank" class="inline-block w-full sm:w-auto bg-green-600 hover:bg-green-500 px-12 py-4 rounded-2xl font-black transition-colors shadow-lg">
+                <i class="fas fa-cloud-download-alt mr-2"></i> DOWNLOAD HD
+            </a>
+        </div>
+    </div>
 
-    try {
-        // এই এপিআইটি বর্তমানে সবচেয়ে স্টেবল
-        const response = await fetch(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`);
-        const data = await response.json();
+    <div class="grid grid-cols-2 gap-6 mt-12 w-full max-w-2xl">
+        <div class="glass p-6 rounded-3xl text-center">
+            <h3 class="text-2xl font-bold">Unlimited</h3>
+            <p class="text-gray-500 text-sm">Free Forever</p>
+        </div>
+        <div class="glass p-6 rounded-3xl text-center">
+            <h3 class="text-2xl font-bold">Help Center</h3>
+            <p class="text-gray-500 text-sm">Join Telegram</p>
+        </div>
+    </div>
 
-        if(data && data.video) {
-            document.getElementById('hd').href = data.video.noWatermark || data.video.url;
-            result.style.display = 'block';
-        } else {
-            alert("এই লিঙ্কটি কাজ করছে না। অন্য একটি ভিডিও ট্রাই করুন।");
+    <script>
+        async function fetchVideo() {
+            const url = document.getElementById('videoUrl').value;
+            const btn = document.getElementById('mainBtn');
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            if (!url) {
+                alert("ভাই, আগে লিঙ্কটা তো দিন!");
+                return;
+            }
+
+            // UI Reset
+            btn.disabled = true;
+            status.classList.remove('hidden');
+            result.classList.add('hidden');
+
+            try {
+                // এই এপিআইটা বর্তমানে সবচেয়ে ভালো কাজ করছে
+                const res = await fetch(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`);
+                const data = await res.json();
+
+                if (data && (data.video || data.data)) {
+                    // এপিআই অনুযায়ী ভিডিও লিঙ্ক সেট করা
+                    const finalLink = data.video?.noWatermark || data.video?.url || data.data?.video;
+                    
+                    if (finalLink) {
+                        downloadBtn.href = finalLink;
+                        status.classList.add('hidden');
+                        result.classList.remove('hidden');
+                    } else {
+                        throw new Error("Link not found");
+                    }
+                } else {
+                    alert("সার্ভার ওভারলোড বা লিঙ্ক ভুল। আবার চেষ্টা করুন।");
+                    status.classList.add('hidden');
+                }
+            } catch (error) {
+                status.classList.add('hidden');
+                alert("এপিআই রেসপন্স করছে না। দয়া করে ১ মিনিট পর আবার ট্রাই করুন।");
+            } finally {
+                btn.disabled = false;
+            }
         }
-    } catch (err) {
-        alert("সার্ভারে সমস্যা হচ্ছে, আবার চেষ্টা করুন।");
-    } finally {
-        btn.disabled = false;
-        loader.style.display = 'none';
-    }
-}
-</script>
-
+    </script>
 </body>
 </html>
