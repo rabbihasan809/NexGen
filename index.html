@@ -3,106 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexGen - Universal Multi-Platform Media Extractor</title>
+    <title>NexGen - Premium Downloader</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #111827; color: white; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .btn-gradient { background: linear-gradient(135deg, #2563eb, #1d4ed8); transition: all 0.3s ease; }
-        .btn-gradient:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
+        body {
+            background: radial-gradient(circle at top right, #1e293b, #000000);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: white;
+            padding: 20px;
+        }
+        /* iOS Glassmorphism Effect */
+        .ios-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 35px;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .ios-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            width: 100%;
+            padding: 18px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .ios-input:focus { border-color: #007AFF; box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.2); }
+        .ios-btn {
+            background: #007AFF;
+            color: white;
+            font-weight: 600;
+            padding: 16px;
+            border-radius: 18px;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+        }
+        .ios-btn:active { transform: scale(0.96); opacity: 0.9; }
+        .ios-btn:disabled { background: #444; cursor: not-allowed; }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #007AFF;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body>
 
-    <div class="text-center mb-12">
-        <div class="flex items-center justify-center gap-3 mb-3">
-            <i class="fas fa-globe-americas text-4xl text-blue-500"></i>
-            <h1 class="text-5xl font-extrabold tracking-tighter">NEXGEN</h1>
+<div class="ios-card">
+    <div class="text-center mb-10">
+        <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+            <i class="fas fa-arrow-down text-2xl"></i>
         </div>
-        <p class="text-gray-400 text-lg">Universal Multi-Platform Media Extractor</p>
+        <h1 class="text-3xl font-bold tracking-tight">NexGen</h1>
+        <p class="text-gray-400 mt-1">iOS Style Media Downloader</p>
     </div>
 
-    <div class="glass w-full max-w-2xl p-8 rounded-[2rem] shadow-2xl">
-        <div class="flex flex-col sm:flex-row gap-4">
-            <input type="text" id="videoUrl" placeholder="https://vt.tiktok.com/..." 
-                class="flex-1 bg-gray-800/50 border border-gray-700 p-5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500">
-            <button onclick="fetchVideo()" id="mainBtn" class="btn-gradient px-10 py-5 rounded-2xl font-bold text-sm uppercase tracking-widest">
-                Generate
-            </button>
-        </div>
-
-        <div id="status" class="hidden mt-8 text-center">
-            <div class="flex items-center justify-center gap-3">
-                <div class="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                <p id="statusText" class="text-blue-400 font-medium">Connecting to Global Nodes...</p>
-            </div>
-        </div>
-
-        <div id="result" class="hidden mt-10 p-6 bg-blue-500/5 rounded-3xl border border-blue-500/20 text-center">
-            <p class="text-green-400 font-bold mb-6">Video Ready for Download!</p>
-            <a id="downloadBtn" href="#" target="_blank" class="inline-block w-full sm:w-auto bg-green-600 hover:bg-green-500 px-12 py-4 rounded-2xl font-black transition-colors shadow-lg">
-                <i class="fas fa-cloud-download-alt mr-2"></i> DOWNLOAD HD
-            </a>
-        </div>
+    <div class="space-y-2">
+        <input type="text" id="urlInput" class="ios-input" placeholder="Paste link here...">
+        <button onclick="smartDownload()" id="actionBtn" class="ios-btn">
+            GENERATE LINK
+        </button>
     </div>
 
-    <div class="grid grid-cols-2 gap-6 mt-12 w-full max-w-2xl">
-        <div class="glass p-6 rounded-3xl text-center">
-            <h3 class="text-2xl font-bold">Unlimited</h3>
-            <p class="text-gray-500 text-sm">Free Forever</p>
-        </div>
-        <div class="glass p-6 rounded-3xl text-center">
-            <h3 class="text-2xl font-bold">Help Center</h3>
-            <p class="text-gray-500 text-sm">Join Telegram</p>
-        </div>
+    <div id="loader" class="hidden mt-8 text-center">
+        <div class="loading-spinner"></div>
+        <p class="text-sm text-gray-400 mt-3 font-medium">Fetching from Secure Server...</p>
     </div>
 
-    <script>
-        async function fetchVideo() {
-            const url = document.getElementById('videoUrl').value;
-            const btn = document.getElementById('mainBtn');
-            const status = document.getElementById('status');
-            const result = document.getElementById('result');
-            const downloadBtn = document.getElementById('downloadBtn');
+    <div id="result" class="hidden mt-8 p-5 rounded-3xl bg-white/5 border border-white/10 text-center animate-fade-in">
+        <p class="text-blue-400 font-bold mb-4"><i class="fas fa-check-circle mr-2"></i>Link Generated!</p>
+        <a id="dlLink" href="#" target="_blank" class="block w-full bg-white text-black py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all">
+            DOWNLOAD VIDEO
+        </a>
+    </div>
+</div>
 
-            if (!url) {
-                alert("ভাই, আগে লিঙ্কটা তো দিন!");
-                return;
+<script>
+async function smartDownload() {
+    const url = document.getElementById('urlInput').value;
+    const btn = document.getElementById('actionBtn');
+    const loader = document.getElementById('loader');
+    const result = document.getElementById('result');
+
+    if(!url) return alert("Please enter a URL first!");
+
+    btn.disabled = true;
+    loader.classList.remove('hidden');
+    result.classList.add('hidden');
+
+    // Multi-Server Logic: Try multiple reliable APIs
+    const apis = [
+        `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`,
+        `https://api.vreden.my.id/api/download/tiktok?url=${encodeURIComponent(url)}`
+    ];
+
+    let success = false;
+
+    for (let api of apis) {
+        try {
+            const response = await fetch(api);
+            const data = await response.json();
+            
+            // Handle different API response structures
+            const videoLink = data.video?.noWatermark || data.result?.video || data.result?.nowatermark;
+
+            if (videoLink) {
+                document.getElementById('dlLink').href = videoLink;
+                result.classList.remove('hidden');
+                success = true;
+                break;
             }
+        } catch (e) { console.log("Trying next server..."); }
+    }
 
-            // UI Reset
-            btn.disabled = true;
-            status.classList.remove('hidden');
-            result.classList.add('hidden');
+    loader.classList.add('hidden');
+    btn.disabled = false;
 
-            try {
-                // এই এপিআইটা বর্তমানে সবচেয়ে ভালো কাজ করছে
-                const res = await fetch(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`);
-                const data = await res.json();
+    if (!success) {
+        alert("সার্ভার ওভারলোড। দয়া করে ১ মিনিট পর আবার ট্রাই করুন।");
+    }
+}
+</script>
 
-                if (data && (data.video || data.data)) {
-                    // এপিআই অনুযায়ী ভিডিও লিঙ্ক সেট করা
-                    const finalLink = data.video?.noWatermark || data.video?.url || data.data?.video;
-                    
-                    if (finalLink) {
-                        downloadBtn.href = finalLink;
-                        status.classList.add('hidden');
-                        result.classList.remove('hidden');
-                    } else {
-                        throw new Error("Link not found");
-                    }
-                } else {
-                    alert("সার্ভার ওভারলোড বা লিঙ্ক ভুল। আবার চেষ্টা করুন।");
-                    status.classList.add('hidden');
-                }
-            } catch (error) {
-                status.classList.add('hidden');
-                alert("এপিআই রেসপন্স করছে না। দয়া করে ১ মিনিট পর আবার ট্রাই করুন।");
-            } finally {
-                btn.disabled = false;
-            }
-        }
-    </script>
 </body>
 </html>
