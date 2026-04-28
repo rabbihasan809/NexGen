@@ -1,148 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexGen - Premium Downloader</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>NexGen Downloader | Global Media Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        :root {
+            --bg: #F2F2F7;
+            --card: rgba(255, 255, 255, 0.85);
+            --blue: #007AFF;
+            --green: #24b47e;
+            --text: #1C1C1E;
+            --blur: blur(30px);
+        }
+
+        * { box-sizing: border-box; }
+
         body {
-            background: radial-gradient(circle at top right, #1e293b, #000000);
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-radius: 28px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .download-main {
+            grid-column: span 3;
+            grid-row: span 2;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: white;
-            padding: 20px;
+            align-items: center;
+            text-align: center;
         }
-        /* iOS Glassmorphism Effect */
-        .ios-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 35px;
-            width: 100%;
-            max-width: 450px;
-            padding: 40px 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+
+        .input-group {
+            width: 92%;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 20px;
+            padding: 5px;
+            display: flex;
+            margin: 25px auto 0 auto;
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        .ios-input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
-            width: 100%;
-            padding: 18px;
-            color: white;
+
+        .input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px;
+            font-size: 1rem;
             outline: none;
-            transition: 0.3s;
-            font-size: 16px;
+            min-width: 0;
         }
-        .ios-input:focus { border-color: #007AFF; box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.2); }
-        .ios-btn {
-            background: #007AFF;
+
+        .btn-action {
+            background: var(--blue);
             color: white;
-            font-weight: 600;
-            padding: 16px;
-            border-radius: 18px;
-            width: 100%;
-            margin-top: 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            letter-spacing: 0.5px;
+            border: none;
+            padding: 0 25px;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .ios-btn:active { transform: scale(0.96); opacity: 0.9; }
-        .ios-btn:disabled { background: #444; cursor: not-allowed; }
-        
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #007AFF;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
+
+        .btn-action:hover { opacity: 0.9; transform: scale(0.98); }
+
+        .stat-val { font-size: 1.8rem; font-weight: 800; margin: 5px 0; letter-spacing: -1px; }
+        .card h3 { font-size: 0.75rem; text-transform: uppercase; opacity: 0.4; margin: 0; font-weight: 700; }
+
+        .v-text { color: var(--green); }
+
+        #resultArea {
+            display: none;
+            grid-column: span 4;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .preview-grid { display: flex; gap: 20px; flex-wrap: wrap; align-items: start; }
+        video { width: 100%; max-width: 450px; border-radius: 18px; background: #000; }
+        .links-container { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .dl-item {
+            background: white; padding: 15px; border-radius: 14px; text-decoration: none;
+            color: var(--text); font-weight: 700; display: flex; justify-content: space-between;
+            border: 1px solid rgba(0,0,0,0.05); transition: 0.2s;
+        }
+        .dl-item:hover { background: var(--blue); color: white; }
+
+        .modern-footer {
+            margin-top: 60px;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 100px;
+            backdrop-filter: blur(10px);
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .spider-link {
+            text-decoration: none; font-weight: 800; color: var(--blue);
+            animation: neonFlow 3s infinite alternate;
+        }
+        @keyframes neonFlow {
+            0% { color: var(--blue); }
+            100% { color: #8b5cf6; }
+        }
+
+        @media (max-width: 800px) {
+            .dashboard-container { grid-template-columns: 1fr 1fr; }
+            .download-main { grid-column: span 2; }
+            .preview-grid { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
-<div class="ios-card">
-    <div class="text-center mb-10">
-        <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
-            <i class="fas fa-arrow-down text-2xl"></i>
+<div class="dashboard-container">
+    
+    <div class="card download-main">
+        <div style="font-size: 2.2rem; font-weight: 900; color: var(--blue);">
+            <i class="fas fa-globe-americas"></i> NEXGEN
         </div>
-        <h1 class="text-3xl font-bold tracking-tight">NexGen</h1>
-        <p class="text-gray-400 mt-1">iOS Style Media Downloader</p>
+        <p style="opacity: 0.5; font-size: 0.85rem; margin-top: 5px;">Universal Multi-Platform Media Extractor</p>
+        
+        <div class="input-group">
+            <input type="text" id="vUrl" placeholder="ভিডিও লিংক এখানে পেস্ট করুন...">
+            <button class="btn-action" onclick="fetchMedia()">GENERATE</button>
+        </div>
+        <div id="loader" style="display:none; margin-top:15px; font-size: 0.9rem; font-weight: 600;">
+            <i class="fas fa-circle-notch fa-spin"></i> Connecting to Global Nodes...
+        </div>
     </div>
 
-    <div class="space-y-2">
-        <input type="text" id="urlInput" class="ios-input" placeholder="Paste link here...">
-        <button onclick="smartDownload()" id="actionBtn" class="ios-btn">
-            GENERATE LINK
-        </button>
+    <div class="card">
+        <h3><i class="fas fa-tachometer-alt"></i> Traffic</h3>
+        <div class="stat-val">Low</div>
+        <small style="color: var(--green); font-weight: 600;"><i class="fas fa-check-circle"></i> High Speed</small>
     </div>
 
-    <div id="loader" class="hidden mt-8 text-center">
-        <div class="loading-spinner"></div>
-        <p class="text-sm text-gray-400 mt-3 font-medium">Fetching from Secure Server...</p>
+    <div class="card">
+        <h3><i class="fas fa-shield-check"></i> Security</h3>
+        <div class="stat-val v-text">Verified</div>
+        <small style="opacity: 0.6;">Encrypted & Safe</small>
     </div>
 
-    <div id="result" class="hidden mt-8 p-5 rounded-3xl bg-white/5 border border-white/10 text-center animate-fade-in">
-        <p class="text-blue-400 font-bold mb-4"><i class="fas fa-check-circle mr-2"></i>Link Generated!</p>
-        <a id="dlLink" href="#" target="_blank" class="block w-full bg-white text-black py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all">
-            DOWNLOAD VIDEO
-        </a>
+    <div class="card">
+        <h3><i class="fas fa-database"></i> Capacity</h3>
+        <div class="stat-val">Unlimited</div>
+        <small style="opacity: 0.6;">Free Forever</small>
     </div>
+
+    <a href="https://t.me/nexgendownloader" target="_blank" class="card" style="background: var(--blue); color: white; text-decoration: none;">
+        <h3 style="color: white; opacity: 0.7;">Support</h3>
+        <div style="font-size: 1.2rem; font-weight: 800; margin-top: 10px;">Help Center</div>
+        <small>Join Telegram Channel</small>
+    </a>
+
+    <div id="resultArea" class="card">
+        <div class="preview-grid">
+            <video id="pCore" controls></video>
+            <div class="links-container" id="lGrid"></div>
+        </div>
+    </div>
+
+    <div class="card" style="grid-column: span 2;">
+        <h3>Supported Platforms</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px;">
+            <div style="background: #fff; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ff0000;"><i class="fab fa-youtube"></i></div>
+            <div style="background: #fff; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #000;"><i class="fab fa-tiktok"></i></div>
+            <div style="background: #fff; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #1877f2;"><i class="fab fa-facebook"></i></div>
+            <div style="background: #fff; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #e4405f;"><i class="fab fa-instagram"></i></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Server status</h3>
+        <div style="font-size: 0.9rem; font-weight: 800; color: var(--green); margin-top: 10px;">
+            <i class="fas fa-circle"></i> Operational
+        </div>
+        <small style="opacity: 0.6;">Mainframe: Online</small>
+    </div>
+
+    <div class="card">
+        <h3>System</h3>
+        <div style="margin-top: 10px; font-size: 1.1rem; opacity: 0.6;">
+            <i class="fas fa-cog"></i> &nbsp; <i class="fas fa-bell"></i>
+        </div>
+    </div>
+
+</div>
+
+<div class="modern-footer">
+    Tool Made By <a href="https://t.me/SpiderX5" target="_blank" class="spider-link">SpiderX</a>
 </div>
 
 <script>
-async function smartDownload() {
-    const url = document.getElementById('urlInput').value;
-    const btn = document.getElementById('actionBtn');
-    const loader = document.getElementById('loader');
-    const result = document.getElementById('result');
+    async function fetchMedia() {
+        const urlInput = document.getElementById('vUrl').value;
+        const loader = document.getElementById('loader');
+        const resArea = document.getElementById('resultArea');
+        const lGrid = document.getElementById('lGrid');
+        const player = document.getElementById('pCore');
 
-    if(!url) return alert("Please enter a URL first!");
+        if(!urlInput) { alert("Please provide a link!"); return; }
+        
+        loader.style.display = "block";
+        resArea.style.display = "none";
 
-    btn.disabled = true;
-    loader.classList.remove('hidden');
-    result.classList.add('hidden');
+        // Multiple instances of Cobalt to ensure high availability
+        const instances = [
+            'https://api.cobalt.tools/api/json',
+            'https://cobalt.sh/api/json'
+        ];
 
-    // Multi-Server Logic: Try multiple reliable APIs
-    const apis = [
-        `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`,
-        `https://api.vreden.my.id/api/download/tiktok?url=${encodeURIComponent(url)}`
-    ];
+        let success = false;
 
-    let success = false;
+        for (let api of instances) {
+            try {
+                const response = await fetch(api, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: urlInput,
+                        vQuality: '720'
+                    })
+                });
 
-    for (let api of apis) {
-        try {
-            const response = await fetch(api);
-            const data = await response.json();
-            
-            // Handle different API response structures
-            const videoLink = data.video?.noWatermark || data.result?.video || data.result?.nowatermark;
-
-            if (videoLink) {
-                document.getElementById('dlLink').href = videoLink;
-                result.classList.remove('hidden');
-                success = true;
-                break;
+                const data = await response.json();
+                
+                if (data.url || data.status === 'stream') {
+                    loader.style.display = "none";
+                    resArea.style.display = "block";
+                    player.src = data.url;
+                    lGrid.innerHTML = `
+                        <div style="padding:10px; background:rgba(0,122,255,0.05); border-radius:12px; margin-bottom:10px;">
+                            ✅ <b>Media Found!</b> Ready to download.
+                        </div>
+                        <a href="${data.url}" target="_blank" class="dl-item">
+                            <span>Download High Quality</span>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    `;
+                    success = true;
+                    break;
+                }
+            } catch (e) {
+                console.log(`Failed instance: ${api}`);
+                continue; 
             }
-        } catch (e) { console.log("Trying next server..."); }
-    }
+        }
 
-    loader.classList.add('hidden');
-    btn.disabled = false;
-
-    if (!success) {
-        alert("সার্ভার ওভারলোড। দয়া করে ১ মিনিট পর আবার ট্রাই করুন।");
+        if (!success) {
+            loader.style.display = "none";
+            alert("Server is currently under high load. Please try again in 1 minute or check if the link is correct.");
+        }
     }
-}
 </script>
 
 </body>
