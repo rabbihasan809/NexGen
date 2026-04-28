@@ -235,55 +235,41 @@
         loader.style.display = "block";
         resArea.style.display = "none";
 
-        // Multiple instances of Cobalt to ensure high availability
-        const instances = [
-            'https://api.cobalt.tools/api/json',
-            'https://cobalt.sh/api/json'
-        ];
-
-        let success = false;
-
-        for (let api of instances) {
-            try {
-                const response = await fetch(api, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        url: urlInput,
-                        vQuality: '720'
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data.url || data.status === 'stream') {
-                    loader.style.display = "none";
-                    resArea.style.display = "block";
-                    player.src = data.url;
-                    lGrid.innerHTML = `
-                        <div style="padding:10px; background:rgba(0,122,255,0.05); border-radius:12px; margin-bottom:10px;">
-                            ✅ <b>Media Found!</b> Ready to download.
-                        </div>
-                        <a href="${data.url}" target="_blank" class="dl-item">
-                            <span>Download High Quality</span>
-                            <i class="fas fa-download"></i>
-                        </a>
-                    `;
-                    success = true;
-                    break;
-                }
-            } catch (e) {
-                console.log(`Failed instance: ${api}`);
-                continue; 
+        // আপনার দেওয়া RapidAPI-র সেটআপ
+        const options = {
+            method: 'GET',
+            headers: {
+                'X-RapidAPI-Key': '29f8c3b79amshc7b9755d426320dp1b94fajsn62b1821d47db',
+                'X-RapidAPI-Host': 'social-media-video-downloader.p.rapidapi.com'
             }
-        }
+        };
 
-        if (!success) {
+        try {
+            const response = await fetch(`https://social-media-video-downloader.p.rapidapi.com/api/video/info?url=${encodeURIComponent(urlInput)}`, options);
+            const data = await response.json();
+            
+            // এপিআই থেকে প্রাপ্ত ভিডিওর ডাটা চেক করা
+            const videoUrl = data.url || (data.links && data.links[0].link);
+
+            if (videoUrl) {
+                loader.style.display = "none";
+                resArea.style.display = "block";
+                player.src = videoUrl;
+                lGrid.innerHTML = `
+                    <div style="padding:10px; background:rgba(0,122,255,0.05); border-radius:12px; margin-bottom:10px;">
+                        ✅ <b>Media Found!</b> Ready to download.
+                    </div>
+                    <a href="${videoUrl}" target="_blank" class="dl-item">
+                        <span>Download Now</span>
+                        <i class="fas fa-download"></i>
+                    </a>
+                `;
+            } else {
+                throw new Error("No media found");
+            }
+        } catch (e) {
             loader.style.display = "none";
-            alert("Server is currently under high load. Please try again in 1 minute or check if the link is correct.");
+            alert("Error: Invalid link or API limit reached!");
         }
     }
 </script>
